@@ -48,7 +48,7 @@ if (!mongoURI) {
     process.exit(1);
 }
 
-mongoose.connect(mongoURI)
+mongoose.connect(mongoURI, { family: 4 })
     .then(() => console.log('MongoDB connection established successfully'))
     .catch(err => console.error('MongoDB connection error:', err));
 
