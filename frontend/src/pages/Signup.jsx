@@ -7,10 +7,13 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
@@ -27,7 +30,9 @@ function Signup() {
         setError(data.message || 'Registration failed');
       }
     } catch (err) {
-      setError('Server Error. Please try again later.');
+      setError('Server is waking up or unreachable. Please try again in 30 seconds.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,7 +54,22 @@ function Signup() {
             <label style={{ display: 'block', marginBottom: '5px' }}>Password</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength="6" style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }} />
           </div>
-          <button type="submit" style={{ width: '100%', padding: '12px', background: '#27ae60', color: '#fff', border: 'none', borderRadius: '5px', fontSize: '1.1rem', cursor: 'pointer' }}>Sign Up</button>
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ 
+              width: '100%', 
+              padding: '12px', 
+              background: loading ? '#95a5a6' : '#27ae60', 
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: '5px', 
+              fontSize: '1.1rem', 
+              cursor: loading ? 'not-allowed' : 'pointer' 
+            }}
+          >
+            {loading ? 'Creating Account (Please wait...)' : 'Sign Up'}
+          </button>
         </form>
         <p style={{ textAlign: 'center', marginTop: '20px' }}>
           Already have an account? <Link to="/login" style={{ color: '#27ae60', fontWeight: 'bold' }}>Login</Link>

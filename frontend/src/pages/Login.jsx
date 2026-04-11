@@ -5,12 +5,15 @@ import API_BASE_URL from '../api/config';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
+      console.log('Attempting login to:', API_BASE_URL);
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -21,14 +24,15 @@ function Login() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         navigate('/');
-        window.location.reload(); // Quickly refresh to update Header state
+        window.location.reload();
       } else {
-        alert('login failed invalid password id');
-        setError('login failed invalid password id');
+        setError(data.message || 'Login failed: Invalid credentials');
       }
     } catch (err) {
-      alert('Server Error. Please try again later.');
-      setError('Server Error. Please try again later.');
+      console.error('Login Fetch Error:', err);
+      setError('Server is waking up or unreachable. Please try again in 30 seconds.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,7 +50,22 @@ function Login() {
             <label style={{ display: 'block', marginBottom: '5px' }}>Password</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }} />
           </div>
-          <button type="submit" style={{ width: '100%', padding: '12px', background: '#27ae60', color: '#fff', border: 'none', borderRadius: '5px', fontSize: '1.1rem', cursor: 'pointer' }}>Login</button>
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ 
+              width: '100%', 
+              padding: '12px', 
+              background: loading ? '#95a5a6' : '#27ae60', 
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: '5px', 
+              fontSize: '1.1rem', 
+              cursor: loading ? 'not-allowed' : 'pointer' 
+            }}
+          >
+            {loading ? 'Logging in (Please wait...)' : 'Login'}
+          </button>
         </form>
         <p style={{ textAlign: 'center', marginTop: '20px' }}>
           Don't have an account? <Link to="/signup" style={{ color: '#27ae60', fontWeight: 'bold' }}>Sign up</Link>
