@@ -186,19 +186,10 @@ app.delete('/api/products/:id', authAdmin, async (req, res) => {
     }
 });
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-    const buildPath = path.join(__dirname, '../frontend/dist');
-    app.use(express.static(buildPath));
-
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(buildPath, 'index.html'));
-    });
-} else {
-    app.get('/', (req, res) => {
-        res.send('Grocery Store Backend API is running in Development Mode');
-    });
-}
+// Server status route
+app.get('/', (req, res) => {
+    res.json({ message: 'Grocery Store API is running', status: 'UP' });
+});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
