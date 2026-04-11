@@ -1,6 +1,13 @@
 # Deployment Guide
 
-This project is now configured for easy deployment on platforms like Heroku, Render, Vercel, or any Node.js hosting.
+This project is fully production-ready and configured for deployment on platforms like Heroku, Render, Vercel, or any Node.js hosting.
+
+## Security & Performance Features Added
+- **Helmet**: Adds security headers to protect against common web vulnerabilities.
+- **Morgan**: Detailed request logging for production monitoring.
+- **Compression**: Gzip compression to reduce response sizes and improve speed.
+- **Rate Limiting**: Basic DDoS protection (100 requests per 15 mins per IP).
+- **Graceful Error Handling**: Global error boundary to prevent server crashes and hide sensitive stack traces in production.
 
 ## Steps to Deploy
 
@@ -12,27 +19,26 @@ Ensure you set the following environment variables on your hosting platform:
 - `PORT`: (Optional) The platform usually sets this automatically.
 
 ### 2. Deployment Logic
-The project structure is designed so that:
-- The backend serves the built frontend files from `frontend/dist`.
-- The `package.json` in the root handles the build process automatically on most platforms (via `heroku-postbuild` or custom build commands).
+The root `package.json` handles everything:
+- `npm start`: Runs the backend server.
+- `npm run build`: Automatically installs both backend and frontend dependencies and performs the frontend build.
+- `Procfile`: Included for platforms like Heroku.
 
 ### 3. Local Production Test
 To test the production build locally:
-1. Build the frontend:
+1. Run the full build from the root:
    ```bash
-   cd frontend
-   npm install
    npm run build
    ```
-2. Start the backend in production mode:
+2. Start the server in production mode:
    ```bash
-   cd ../backend
    # On Windows (PowerShell):
-   $env:NODE_ENV="production"; node server.js
+   $env:NODE_ENV="production"; npm start
    # On Mac/Linux:
-   NODE_ENV=production node server.js
+   NODE_ENV=production npm start
    ```
-3. Visit `http://localhost:5000` (or your set PORT).
+3. Visit `http://localhost:5000`.
 
 ## Centralized API URL
-The frontend uses `frontend/src/api/config.js` to determine the API URL. In production (when served by the backend), it uses relative paths (defaulting to the same domain).
+The frontend uses `frontend/src/api/config.js` to determine the API URL. In production (served by the backend), it uses relative paths (defaulting to the same domain).
+
