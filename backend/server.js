@@ -117,7 +117,11 @@ app.post('/api/auth/register', async (req, res) => {
         const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
         res.status(201).json({ token, user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role } });
     } catch (error) {
-        res.status(500).json({ message: 'Error registering user' });
+        console.error('Register Error:', error);
+        res.status(500).json({ 
+            message: 'Error registering user',
+            error: process.env.NODE_ENV === 'production' ? {} : error.message 
+        });
     }
 });
 
